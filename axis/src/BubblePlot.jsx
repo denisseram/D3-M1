@@ -1,7 +1,7 @@
 import { scaleLinear, scaleSqrt, extent, scaleOrdinal } from "d3";
 import { AxisBottom } from "./AxisBottom.jsx";
 import { AxisLeft } from "./AxisLeft.jsx";
-import { Legend } from "./Legend.jsx";
+import { Legend, computeLegendLayout } from "./Legend.jsx";
 
 const MARGIN = { top: 20, right: 180, bottom: 60, left: 70 };
 const width = 900;
@@ -15,19 +15,30 @@ export function BubblePlot({ data }) {
   const yScale = scaleLinear().domain(extent(data, d => d.lifeExp)).range([boundsHeight, 0]);
   
   const BUBBLE_MIN_SIZE = 4;
-  const BUBBLE_MAX_SIZE = 40;
+  const BUBBLE_MAX_SIZE = 35;
 
   const sizeScale = scaleSqrt() .domain(extent(data, d => d.pop)) .range([BUBBLE_MIN_SIZE, BUBBLE_MAX_SIZE])
   const continents = Array.from(new Set(data.map(d => d.continent)));
   const colorScale = scaleOrdinal().domain(continents).range(["#540b0e", "#9e2a2b", "#e09f3e", "#335c67", "#0c0c0b"]);
+
+  const legendLayout = computeLegendLayout(colorScale, sizeScale);
+  const legendY = MARGIN.top + (boundsHeight - legendLayout.height) / 2;
+
   return (
-    <svg width={width} height={height}>
+    <figure style={{ margin: 0 }}>
+      <h2 style={{ margin: "0 0 4px", fontSize: 20 }}>
+        Wealth, Health, and Population Across Nations
+      </h2>
+      <p style={{ margin: "0 0 12px", fontSize: 13, color: "#555" }}>
+        GDP per capita vs. life expectancy, bubble size representing population (2007)
+      </p>
+      <svg width={width} height={height}>
         {/* SVG background */}
         <rect/>
 
         {/* Bounds Area */}
-        <g transform={`translate(${width - MARGIN.right + 20}, ${MARGIN.top})`}>
-            <Legend colorScale={colorScale} sizeScale={sizeScale} width={150} height={boundsHeight} />
+        <g transform={`translate(${width - MARGIN.right + 20}, ${legendY})`}>
+            <Legend colorScale={colorScale} sizeScale={sizeScale} />
         </g>
 
         
@@ -61,6 +72,10 @@ export function BubblePlot({ data }) {
                 
             />
         </g>
-    </svg>
+      </svg>
+      <figcaption style={{ fontSize: 11, color: "#888", marginTop: 8 }}>
+        Source: Gapminder Foundation — 2007 dataset
+      </figcaption>
+    </figure>
   );
 }

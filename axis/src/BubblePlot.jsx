@@ -29,9 +29,14 @@ export function BubblePlot({ data }) {
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
+  const hoveredData = hoveredIndex !== null ? data[hoveredIndex] : null;
+
+  const tooltipX = hoveredData ? MARGIN.left + xScale(hoveredData.gdpPercap) : 0;
+  const tooltipY = hoveredData ? MARGIN.top + yScale(hoveredData.lifeExp) : 0;
+
 
   return (
-    <figure style={{ margin: 0 }}>
+    <figure style={{ margin: 0, position: "relative" }}>
       <h2 style={{ margin: "0 0 4px", fontSize: 20 }}>
         Wealth, Health, and Population Across Nations
       </h2>
@@ -87,6 +92,27 @@ export function BubblePlot({ data }) {
             />
         </g>
       </svg>
+      {hoveredData && (
+        <div
+          style={{
+            position: "absolute",
+            left: tooltipX + 10,
+            top: tooltipY - 10,
+            background: "white",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            padding: "6px 10px",
+            fontSize: 11,
+            pointerEvents: "none",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+          }}
+        >
+          <strong>{hoveredData.country}</strong>
+          <div>GDP per capita: ${hoveredData.gdpPercap.toFixed(0)}</div>
+          <div>Life expectancy: {hoveredData.lifeExp.toFixed(1)} years</div>
+        </div>
+      )}
+
       <figcaption style={{ fontSize: 11, color: "#888", marginTop: 8 }}>
         Source: Gapminder Foundation — 2007 dataset
       </figcaption>

@@ -98,13 +98,14 @@ export function BubblePlot({ data }) {
             position: "absolute",
             left: tooltipX + 10,
             top: tooltipY - 10,
-            background: "white",
-            border: "1px solid #ccc",
+            background: "rgba(0, 0, 0, 0.55)",
+            border: "1px solid #000000",
             borderRadius: 4,
-            padding: "6px 10px",
-            fontSize: 11,
+            padding: "4px 4px",
+            fontSize: 10,
+            lineHeight: 1.2,
+            color: "#fff",
             pointerEvents: "none",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
           }}
         >
           <strong>{hoveredData.country}</strong>

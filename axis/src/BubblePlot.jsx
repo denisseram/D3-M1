@@ -2,6 +2,9 @@ import { scaleLinear, scaleSqrt, extent, scaleOrdinal } from "d3";
 import { AxisBottom } from "./AxisBottom.jsx";
 import { AxisLeft } from "./AxisLeft.jsx";
 import { Legend, computeLegendLayout } from "./Legend.jsx";
+import { useState } from "react";
+
+
 
 const MARGIN = { top: 20, right: 180, bottom: 60, left: 70 };
 const width = 900;
@@ -24,6 +27,9 @@ export function BubblePlot({ data }) {
   const legendLayout = computeLegendLayout(colorScale, sizeScale);
   const legendY = MARGIN.top + (boundsHeight - legendLayout.height) / 2;
 
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+
   return (
     <figure style={{ margin: 0 }}>
       <h2 style={{ margin: "0 0 4px", fontSize: 20 }}>
@@ -44,18 +50,26 @@ export function BubblePlot({ data }) {
         
         <g transform={`translate(${MARGIN.left}, ${MARGIN.top})`}>
             {/* Loop for bubbles */}
-            {data.map((d, i) => (
+            {data.map((d, i) => {
+            const isHovered = hoveredIndex === i;
+            const opacity = isHovered ? 1 : 0.3;
+
+
+            return (
                 <circle 
                     key={i}
                     cx= {xScale(d.gdpPercap)}
                     cy= {yScale(d.lifeExp)}
                     r= {sizeScale(d.pop)}
                     fill={colorScale(d.continent)}
-                    fillOpacity={0.3}
+                    fillOpacity={opacity}
                     stroke={colorScale(d.continent)}
                     strokeWidth={1}
+                    onMouseEnter={() => setHoveredIndex(i)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                 />
-            ))}
+              );
+            })}
             <g transform={`translate(0, ${boundsHeight})`}>
             <AxisBottom
                 xScale={xScale}
